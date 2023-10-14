@@ -1,5 +1,9 @@
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.vision.v1.ImageAnnotatorSettings;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,7 +12,16 @@ import java.util.List;
 public class OCR {
 
     public static ImageAnnotatorClient getVisionClient() throws IOException {
-        return ImageAnnotatorClient.create();
+        // Ruta al archivo JSON de clave de cuenta de servicio
+        String keyPath = "extra/application_default_credentials.json";
+
+        // Carga las credenciales desde el archivo JSON
+        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(keyPath));
+
+        // Crea el cliente de Vision API usando las credenciales
+        ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
+                .setCredentialsProvider(() -> credentials).build();
+        return ImageAnnotatorClient.create(settings);
     }
 
     public static byte[] readImage(String path) throws IOException {
