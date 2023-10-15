@@ -29,15 +29,12 @@ public class LogicTree {
 
     public static int precedence(String  operator){
         switch (operator){
-            case "+":
-            case "-":
+            case "|":
+            case "&":
+            case "^":
                 return 1;
-            case "*":
-            case "/":
-            case "%":
+            case "~":
                 return 2;
-            case "**":
-                return 3;
             default:
                 return 0;
         }
@@ -46,10 +43,10 @@ public class LogicTree {
     public static String infixToPostfix(String infix) {
         StringBuilder postfix = new StringBuilder();
         Stacks.Stack_LinkedList stack = new Stacks().new Stack_LinkedList();
-        String preprocessed = preprocess(infix);
 
-        for (String token : preprocessed.split("\\s+")) {
-            if (Character.isDigit(token.charAt(0))) {
+        for (String token : infix.split("\\s+")) {
+//            System.out.println(token.charAt(0));
+            if (Character.isLetter(token.charAt(0))) {
                 postfix.append(token);
                 postfix.append(' ');
             } else if (isOperator(token)) {
@@ -83,7 +80,7 @@ public class LogicTree {
     public static TreeNode postfixToTree(String postfix){
         Stacks.Stack_LinkedList stack = new Stacks().new Stack_LinkedList();
         for (String token : postfix.split("\\s+")){
-            if (Character.isDigit(token.charAt(0))){
+            if (Character.isLetter(token.charAt(0))){
                 stack.push(new TreeNode(token));
             } else if (isOperator(token)){
                 TreeNode right = (TreeNode) stack.pop();
@@ -94,49 +91,42 @@ public class LogicTree {
         return (TreeNode) stack.pop();
     }
 
-    public static int evaluate(TreeNode tree){
+    public static boolean evaluate(TreeNode tree){
+//        System.out.println(tree.data);
         if (tree == null){
-            return 0;
+            return false;
         } else if (tree.getLeft() == null && tree.getRight() == null){
-            return Integer.parseInt(tree.getElement());
+            return Boolean.parseBoolean(tree.getElement());
         } else {
-            int left = evaluate(tree.getLeft());
-            int right = evaluate(tree.getRight());
+            boolean left = evaluate(tree.getLeft());
+            boolean right = evaluate(tree.getRight());
+
             String operator = tree.getElement();
             switch (operator){
-                case "+":
-                    return left + right;
-                case "-":
-                    return left - right;
-                case "*":
-                    return left * right;
-                case "/":
-                    return left / right;
-                case "**":
-                    return (int) Math.pow(left, right);
-                case "%":
-                    return left % right;
+                case "|":
+                    return left | right;
+                case "&":
+                    return left & right;
+                case "^":
+                    return left ^ right;
+                case "~":
+                    try {
+                        return !right;
+
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+
+
                 default:
-                    return 0;
+                    return true;
             }
         }
     }
 
-    public static String preprocess(String infix) {
-        // Eliminar todos los espacios
-        String noSpaces = infix.replaceAll("\\s+", "");
-
-        // Añadir espacios alrededor de todos los operadores
-        String spaced = noSpaces.replaceAll("(\\*\\*|[+\\-*/()%^])", " $1 ");
-
-        // Eliminar espacios dobles
-        String cleaned = spaced.replaceAll("\\s+", " ").trim();
-        return cleaned;
-    }
-
 
     public static void main(String[] args) {
-        String infix = "5 * 5 + 1";
+        String infix = "~ ( ( true ^ false ) & ( true | false ) )";
         System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
         System.out.println("Postfix: " + postfix);
