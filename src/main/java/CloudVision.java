@@ -1,157 +1,49 @@
-import org.bytedeco.javacv.CanvasFrame;
+import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
-import org.bytedeco.opencv.opencv_core.IplImage;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.IplImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.io.File;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CloudVision extends JFrame {
-    private JButton btnOpenCam, btnTakePhoto, btnSend, btnCloseCam;
+    private JButton btnOpenCam, btnSend;
     private JTextField entryText;
-    private CanvasFrame canvasFrame;
-    private OpenCVFrameGrabber grabber;
-    private IplImage currentFrame;
 
     public CloudVision() {
         setTitle("CloudVision");
-        setSize(500, 500);
-        setLayout(new FlowLayout());
+        setSize(900, 600);
+        setLayout(new BorderLayout());
 
         btnOpenCam = new JButton("Open Camera");
-        btnOpenCam.addActionListener(e -> startCamera());
-
-        btnTakePhoto = new JButton("Take Photo");
-        btnTakePhoto.addActionListener(e -> captureAndProcess());
+        btnOpenCam.addActionListener(e -> {
+            CameraFrame cameraFrame = new CameraFrame(entryText);
+            cameraFrame.setVisible(true);
+        });
 
         btnSend = new JButton("Send");
         btnSend.addActionListener(e -> sendText());
 
-        btnCloseCam = new JButton("Close Camera");
-        btnCloseCam.addActionListener(e -> closeCamera());
-
         entryText = new JTextField(20);
 
-        add(btnOpenCam);
-        add(btnTakePhoto);
-        add(btnSend);
-        add(btnCloseCam);
-        add(entryText);
+        // Panel central con FlowLayout para organizar los elementos horizontalmente
+        JPanel centerPanel = new JPanel();
+        centerPanel.add(btnOpenCam);
+        centerPanel.add(entryText);
+        centerPanel.add(btnSend);
+
+        // Agrega el panel central a la ventana principal
+        add(centerPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    private void closeCamera() { // <-- Método para cerrar la cámara
-        if (canvasFrame != null) {
-            canvasFrame.dispose();
-            canvasFrame = null;
-        }
-        if (grabber != null) {
-            try {
-                grabber.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error al detener grabber.");
-            }
-            grabber = null;
-        }
-    }
-
-    private void startCamera() {
-        // Si grabber ya existe, reinícialo.
-        if (grabber != null) {
-            try {
-                grabber.restart();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error al reiniciar grabber.");
-                return;
-            }
-        } else {
-            grabber = new OpenCVFrameGrabber(0);
-            grabber.setImageWidth(832);  // Ejemplo de ancho
-            grabber.setImageHeight(468);  // Ejemplo de alto
-            try {
-                grabber.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error al iniciar grabber.");
-                return;
-            }
-        }
-
-        // Si canvasFrame ya existe, reinícialo.
-        if (canvasFrame != null) {
-            canvasFrame.dispose();
-            canvasFrame = null;
-        }
-        canvasFrame = new CanvasFrame("Camera", 1);
-        canvasFrame.setCanvasSize(832, 468);
-        canvasFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-        new Thread(() -> {
-            while (canvasFrame != null && canvasFrame.isVisible()) {
-                try {
-                    org.bytedeco.javacv.Frame frame = grabber.grab();
-                    if (frame == null) {
-                        System.out.println("No se pudo obtener un frame.");
-                        break;
-                    }
-                    if (canvasFrame != null) {  // Asegurándonos de que canvasFrame no es null antes de usarlo
-                        canvasFrame.showImage(frame);
-                    }
-                    currentFrame = new OpenCVFrameConverter.ToIplImage().convert(frame);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                grabber.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error al detener grabber.");
-            }
-        }).start();
-    }
-
-    private void captureAndProcess() {
-        if (currentFrame != null) {
-            // Obtiene la fecha y hora actuales y las formatea para ser utilizadas en un nombre de archivo
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-            String formattedNow = now.format(formatter);
-
-            // Crea la carpeta 'photos' si no existe
-            File photosDir = new File("photos");
-            if (!photosDir.exists()) {
-                photosDir.mkdir();
-            }
-
-            // Salva la imagen actual
-            String savedImagePath = "photos/" + formattedNow + ".png";
-
-            opencv_imgcodecs.cvSaveImage(savedImagePath, currentFrame);
-
-            // Llama al OCR y actualiza entryText con el texto obtenido
-            try {
-                String extractedText = OCR.detectDocument(savedImagePath);
-                entryText.setText(extractedText);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error: " + e.getMessage());
-            }
-
-            // Borra la imagen guardada
-            File file = new File(savedImagePath);
-            file.delete();
-
-        } else {
-            System.out.println("No image to process.");
-        }
     }
 
     private void sendText() {
@@ -163,5 +55,154 @@ public class CloudVision extends JFrame {
             CloudVision screen = new CloudVision();
             screen.setVisible(true);
         });
+    }
+}
+
+class CameraFrame extends JFrame {
+    private JButton btnTakePhoto;
+    private JLabel cameraLabel;
+    private OpenCVFrameGrabber grabber;
+    private IplImage currentFrame;
+    private final Lock grabberLock = new ReentrantLock();
+    private JTextField entryText;
+    private volatile boolean isRunning = true;
+    private Thread cameraThread;
+    private JButton btnCloseCamera;
+
+
+    public CameraFrame(JTextField entryText) {
+        this.entryText = entryText;
+
+        setTitle("Camera");
+        setSize(900, 600);
+        setLayout(new BorderLayout());
+
+        cameraLabel = new JLabel();
+        add(cameraLabel, BorderLayout.CENTER);
+
+        btnTakePhoto = new JButton("Take Photo");
+        btnTakePhoto.addActionListener(e -> captureAndProcess());
+
+        // Inicialización del botón "Close Camera"
+        btnCloseCamera = new JButton("Close Camera");
+        btnCloseCamera.addActionListener(e -> {
+            closeAndDispose(); // Método que cierra y libera la cámara y termina la ventana
+        });
+
+        JPanel southPanel = new JPanel(); // Panel para contener ambos botones
+        southPanel.add(btnTakePhoto);
+        southPanel.add(btnCloseCamera);
+        add(southPanel, BorderLayout.SOUTH);
+        startCamera();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isRunning = false;
+                if (cameraThread != null) {
+                    try {
+                        cameraThread.join(); // Asegúrate de que el thread de la cámara termine antes de proceder.
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                closeCamera(); // Crea este método
+            }
+        });
+
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+
+    private void startCamera() {
+        grabberLock.lock();
+        try {
+            if (grabber == null) {
+                grabber = new OpenCVFrameGrabber(0);
+                grabber.setImageWidth(832);
+                grabber.setImageHeight(468);
+                grabber.start();
+            }
+
+            Java2DFrameConverter converter = new Java2DFrameConverter();
+            cameraThread = new Thread(() -> {
+                try {
+                    while (isRunning) {
+                        org.bytedeco.javacv.Frame frame = grabber.grab();
+                        if (frame == null) break;
+                        currentFrame = new OpenCVFrameConverter.ToIplImage().convert(frame);
+                        SwingUtilities.invokeLater(() -> {
+                            ImageIcon icon = new ImageIcon(converter.getBufferedImage(frame));
+                            cameraLabel.setIcon(icon);
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            cameraThread.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            grabberLock.unlock();
+        }
+    }
+
+    private void captureAndProcess() {
+        if (currentFrame != null) {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            String formattedNow = now.format(formatter);
+
+            File photosDir = new File("photos");
+            if (!photosDir.exists()) {
+                photosDir.mkdir();
+            }
+
+            String savedImagePath = "photos/" + formattedNow + ".png";
+            opencv_imgcodecs.cvSaveImage(savedImagePath, currentFrame);
+
+            try {
+                String extractedText = OCR.detectDocument(savedImagePath);  // Aquí asumo que tienes un método detectDocument en una clase OCR.
+                entryText.setText(extractedText);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            File file = new File(savedImagePath);
+            file.delete();
+            closeAndDispose();
+        } else {
+            System.out.println("No image to process.");
+        }
+    }
+
+    private void closeCamera() {
+        grabberLock.lock();
+        try {
+            if (grabber != null) {
+                grabber.stop();
+                grabber.release();
+                grabber = null;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            grabberLock.unlock();
+        }
+    }
+
+    private void closeAndDispose() {
+        isRunning = false;
+        if (cameraThread != null) {
+            try {
+                cameraThread.join(); // Asegúrate de que el thread de la cámara termine antes de proceder.
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        closeCamera();
+        dispose(); // Cierra la ventana
     }
 }

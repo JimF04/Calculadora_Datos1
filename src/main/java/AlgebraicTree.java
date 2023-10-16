@@ -137,7 +137,7 @@ public class AlgebraicTree {
 
 
     public static void main(String[] args) {
-        String infix = "((3 *2 ) ** 2 ) % 50";
+        String infix = "(5 * (10 - 15)) + 7";
         System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
         System.out.println("Postfix: " + postfix);
