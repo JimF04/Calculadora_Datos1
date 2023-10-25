@@ -124,13 +124,20 @@ public class LogicTree {
         }
     }
 
-
-    public static void main(String[] args) {
-        String infix = "~ ( ( true ^ false ) & ( true | false ) )";
+    public boolean result(String exp){
+        String infix = exp;
         System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
         System.out.println("Postfix: " + postfix);
         TreeNode tree = postfixToTree(postfix);
         System.out.println("Result: " + evaluate(tree));
+        return evaluate(tree);
+
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("arbol usado");
+
     }
 }
