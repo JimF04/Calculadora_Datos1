@@ -134,14 +134,22 @@ public class AlgebraicTree {
         String cleaned = spaced.replaceAll("\\s+", " ").trim();
         return cleaned;
     }
-
-
-    public static void main(String[] args) {
-        String infix = "((3 *2 ) ** 2 ) % 50";
+    public void result(String exp){
+        String infix = exp;
         System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
         System.out.println("Postfix: " + postfix);
         TreeNode tree = postfixToTree(postfix);
         System.out.println("Result: " + evaluate(tree));
+
     }
+
+
+    public static void main(String[] args) {
+        System.out.println("arbol usado");
+
+    }
+
+
+
 }

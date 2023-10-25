@@ -14,7 +14,7 @@ public class Servidor{
         LinkedList<Integer> lista_puertos = new LinkedList<Integer>();
 
         try {
-            ServerSocket server = new ServerSocket(5000);
+            ServerSocket server = new ServerSocket(6000);
 
             while(true){
 

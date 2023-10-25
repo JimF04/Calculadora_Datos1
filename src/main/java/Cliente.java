@@ -1,9 +1,10 @@
-package Chatjava;
+
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+
 
 
 public class Cliente extends javax.swing.JFrame implements Runnable{
@@ -830,6 +831,10 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void igual_algeActionPerformed(java.awt.event.ActionEvent evt) {
+        String exp = pantalla_alge.getText();
+        System.out.println(exp);
+        AlgebraicTree AA = new AlgebraicTree();
+        AA.result(exp);
 
     }
 
@@ -890,10 +895,12 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void AC_algeActionPerformed(java.awt.event.ActionEvent evt) {
+        pantalla_alge.setText("");
 
     }
 
     private void AC_logActionPerformed(java.awt.event.ActionEvent evt) {
+        pantalla_log.setText("");
 
     }
 
@@ -1019,7 +1026,7 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
              * al principio.
              */
             ServerSocket server = new ServerSocket(0);
-            Socket socket = new Socket("127.0.0.1",5000);
+            Socket socket = new Socket("127.0.0.1",6000);
 
 
             String puerto_codificado = String.valueOf("0" + server.getLocalPort());
