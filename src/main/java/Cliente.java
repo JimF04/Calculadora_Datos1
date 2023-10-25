@@ -834,36 +834,39 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         String exp = pantalla_alge.getText();
         System.out.println(exp);
         AlgebraicTree AA = new AlgebraicTree();
-        AA.result(exp);
+        pantalla_alge.setText(Float.toString(AA.result(exp)));
 
     }
 
     private void jButton65ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton65.getText());
+        pantalla_log.append(jButton65.getText()+" ");
     }
 
     private void jButton66ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton66.getText());
+        pantalla_log.append(jButton66.getText()+" ");
     }
 
     private void jButton67ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton67.getText());
+        pantalla_log.append(jButton67.getText()+" ");
     }
 
     private void igual_logActionPerformed(java.awt.event.ActionEvent evt) {
+        String exp_log = pantalla_log.getText();
+        LogicTree LA = new LogicTree();
+        pantalla_log.setText(Boolean.toString(LA.result(exp_log)));
 
     }
 
     private void jButton69ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton69.getText());
+        pantalla_log.append(jButton69.getText()+" ");
     }
 
     private void jButton70ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton70.getText());
+        pantalla_log.append(jButton70.getText()+" ");
     }
 
     private void jButton71ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton71.getText());
+        pantalla_log.append(jButton71.getText()+" ");
     }
 
     private void jButton52ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -883,11 +886,11 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void jButton56ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton56.getText());
+        pantalla_log.append(jButton56.getText()+" ");
     }
 
     private void jButton57ActionPerformed(java.awt.event.ActionEvent evt) {
-        pantalla_log.append(jButton57.getText());
+        pantalla_log.append(jButton57.getText()+" ");
     }
 
     private void cam_algeActionPerformed(java.awt.event.ActionEvent evt) {

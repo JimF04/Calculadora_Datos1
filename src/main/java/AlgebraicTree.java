@@ -134,13 +134,14 @@ public class AlgebraicTree {
         String cleaned = spaced.replaceAll("\\s+", " ").trim();
         return cleaned;
     }
-    public void result(String exp){
+    public float result(String exp){
         String infix = exp;
         System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
         System.out.println("Postfix: " + postfix);
         TreeNode tree = postfixToTree(postfix);
         System.out.println("Result: " + evaluate(tree));
+        return evaluate(tree);
 
     }
 
