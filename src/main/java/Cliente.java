@@ -894,6 +894,9 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void cam_algeActionPerformed(java.awt.event.ActionEvent evt) {
+        testCam screen = new testCam();
+        screen.setVisible(true);
+
 
     }
 
@@ -908,6 +911,8 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void cam_logActionPerformed(java.awt.event.ActionEvent evt) {
+        testCam screen = new testCam();
+        screen.setVisible(true);
 
     }
 

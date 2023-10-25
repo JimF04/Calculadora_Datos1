@@ -212,6 +212,11 @@ public class testCam extends JFrame {
         System.out.println(entryText.getText());
     }
 
+
+    public void iniciar(){
+
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             testCam screen = new testCam();
