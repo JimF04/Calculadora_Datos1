@@ -1,10 +1,10 @@
-
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Cliente extends javax.swing.JFrame implements Runnable{
@@ -15,6 +15,8 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
      */
 
     Socket socket;
+
+    int puerto = 0;
 
     public Cliente() {
         initComponents();
@@ -835,6 +837,13 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         System.out.println(exp);
         AlgebraicTree AA = new AlgebraicTree();
         pantalla_alge.setText(Float.toString(AA.result(exp)));
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
+        try {
+            send(puerto+ ","+exp+","+Float.toString(AA.result(exp))+","+currentDate);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
@@ -1021,6 +1030,21 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     public javax.swing.JTextField txt_mensaje1;
     // End of variables declaration
 
+
+
+    public void send(String mensaje) throws IOException {
+        Socket socket = new Socket("127.0.0.1",6000);
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        out.writeUTF(mensaje);
+        socket.close();
+
+
+    }
+
+
+
+
+
     @Override
     public void run() {
 
@@ -1036,8 +1060,10 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
             ServerSocket server = new ServerSocket(0);
             Socket socket = new Socket("127.0.0.1",6000);
 
+            puerto = server.getLocalPort();
 
-            String puerto_codificado = String.valueOf("0" + server.getLocalPort());
+
+            String puerto_codificado = String.valueOf("0" + puerto);
 
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             out.writeUTF(puerto_codificado);
@@ -1050,7 +1076,6 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
             while(true){
                 Socket serversocker =  server.accept();
                 DataInputStream datos = new DataInputStream(serversocker.getInputStream());
-
                 String mensajes = datos.readUTF();
 
             }

@@ -1,7 +1,6 @@
 
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -9,7 +8,27 @@ import java.util.Objects;
 
 public class Servidor{
 
+
+    private static void writeToCSV(String data) {
+        File file = new File("historial.csv");
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
+            if (!file.exists() || file.length() == 0) {
+                bw.write("Puerto,Expresion,Resultado,Fecha");
+                bw.newLine();
+            }
+            bw.write(data);
+            bw.newLine();
+        } catch (IOException e) {
+
+        }
+    }
+
     public static void main(String args[]){
+
+
+
+
 
         LinkedList<Integer> lista_puertos = new LinkedList<Integer>();
 
@@ -51,6 +70,7 @@ public class Servidor{
                         mensajepuertos.close();
                     }
                     System.out.println(mensajes);
+                    writeToCSV(mensajes);
                 }
             }
         } catch (Exception e) {
