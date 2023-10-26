@@ -1,24 +1,10 @@
-
-
-import org.bytedeco.javacv.Java2DFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameGrabber;
-import org.bytedeco.opencv.global.opencv_imgcodecs;
-import org.bytedeco.opencv.opencv_core.IplImage;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class Cliente extends javax.swing.JFrame implements Runnable{
@@ -29,6 +15,8 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
      */
 
     Socket socket;
+
+    int puerto = 0;
 
     public Cliente() {
         initComponents();
@@ -849,6 +837,13 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         System.out.println(exp);
         AlgebraicTree AA = new AlgebraicTree();
         pantalla_alge.setText(Float.toString(AA.result(exp)));
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
+        try {
+            send(puerto+ ","+exp+","+Float.toString(AA.result(exp))+","+currentDate);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
@@ -908,13 +903,10 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void cam_algeActionPerformed(java.awt.event.ActionEvent evt) {
-        CameraFrame cameraFrame = new CameraFrame(new TextCallback() {
-            @Override
-            public void appendText(String text) {
-                pantalla_alge.append(text);
-            }
-        });
-        cameraFrame.setVisible(true);
+        CloudVision screen = new CloudVision();
+        screen.setVisible(true);
+
+
     }
 
     private void AC_algeActionPerformed(java.awt.event.ActionEvent evt) {
@@ -928,19 +920,12 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     }
 
     private void cam_logActionPerformed(java.awt.event.ActionEvent evt) {
-        CameraFrame cameraFrame = new CameraFrame(new TextCallback() {
-            @Override
-            public void appendText(String text) {
-                pantalla_log.append(text);
-            }
-        });
-        cameraFrame.setVisible(true);
+        CloudVision screen = new CloudVision();
+        screen.setVisible(true);
 
     }
 
-    public interface TextCallback {
-        void appendText(String text);
-    }
+
 
     /**
      * Código autogenerado por Netbeans para la interfaz gráfica
@@ -1045,6 +1030,21 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     public javax.swing.JTextField txt_mensaje1;
     // End of variables declaration
 
+
+
+    public void send(String mensaje) throws IOException {
+        Socket socket = new Socket("127.0.0.1",6000);
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        out.writeUTF(mensaje);
+        socket.close();
+
+
+    }
+
+
+
+
+
     @Override
     public void run() {
 
@@ -1060,8 +1060,10 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
             ServerSocket server = new ServerSocket(0);
             Socket socket = new Socket("127.0.0.1",6000);
 
+            puerto = server.getLocalPort();
 
-            String puerto_codificado = String.valueOf("0" + server.getLocalPort());
+
+            String puerto_codificado = String.valueOf("0" + puerto);
 
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             out.writeUTF(puerto_codificado);
@@ -1074,161 +1076,11 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
             while(true){
                 Socket serversocker =  server.accept();
                 DataInputStream datos = new DataInputStream(serversocker.getInputStream());
-
                 String mensajes = datos.readUTF();
 
             }
 
         } catch (Exception e) {
             System.out.println(e);}
-    }
-}
-
-class CameraFrame extends JFrame {
-    private JButton btnTakePhoto;
-    private JLabel cameraLabel;
-    private OpenCVFrameGrabber grabber;
-    private IplImage currentFrame;
-    private final Lock grabberLock = new ReentrantLock();
-    private volatile boolean isRunning = true;
-    private Thread cameraThread;
-    private JButton btnCloseCamera;
-    private Cliente.TextCallback textCallback;
-
-
-    public CameraFrame(Cliente.TextCallback textCallback) {
-        this.textCallback = textCallback;
-
-        setTitle("Camera");
-        setSize(900, 600);
-        setLayout(new BorderLayout());
-
-        cameraLabel = new JLabel();
-        add(cameraLabel, BorderLayout.CENTER);
-
-        btnTakePhoto = new JButton("Take Photo");
-        btnTakePhoto.addActionListener(e -> captureAndProcess());
-
-        // Inicialización del botón "Close Camera"
-        btnCloseCamera = new JButton("Close Camera");
-        btnCloseCamera.addActionListener(e -> {
-            closeAndDispose(); // Método que cierra y libera la cámara y termina la ventana
-        });
-
-        JPanel southPanel = new JPanel(); // Panel para contener ambos botones
-        southPanel.add(btnTakePhoto);
-        southPanel.add(btnCloseCamera);
-        add(southPanel, BorderLayout.SOUTH);
-        startCamera();
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                isRunning = false;
-                if (cameraThread != null) {
-                    try {
-                        cameraThread.join(); // Asegúrate de que el thread de la cámara termine antes de proceder.
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                closeCamera(); // Crea este método
-            }
-        });
-
-
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    }
-
-
-    public void startCamera() {
-        grabberLock.lock();
-        try {
-            if (grabber == null) {
-                grabber = new OpenCVFrameGrabber(0);
-                grabber.setImageWidth(832);
-                grabber.setImageHeight(468);
-                grabber.start();
-            }
-
-            Java2DFrameConverter converter = new Java2DFrameConverter();
-            cameraThread = new Thread(() -> {
-                try {
-                    while (isRunning) {
-                        org.bytedeco.javacv.Frame frame = grabber.grab();
-                        if (frame == null) break;
-                        currentFrame = new OpenCVFrameConverter.ToIplImage().convert(frame);
-                        SwingUtilities.invokeLater(() -> {
-                            ImageIcon icon = new ImageIcon(converter.getBufferedImage(frame));
-                            cameraLabel.setIcon(icon);
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-            cameraThread.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            grabberLock.unlock();
-        }
-    }
-
-    public void captureAndProcess() {
-        if (currentFrame != null) {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-            String formattedNow = now.format(formatter);
-
-            File photosDir = new File("photos");
-            if (!photosDir.exists()) {
-                photosDir.mkdir();
-            }
-
-            String savedImagePath = "photos/" + formattedNow + ".png";
-            opencv_imgcodecs.cvSaveImage(savedImagePath, currentFrame);
-
-            try {
-                String extractedText = OCR.detectDocument(savedImagePath);
-                textCallback.appendText(extractedText); // Llama al método de la interfaz para agregar el texto
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            File file = new File(savedImagePath);
-            file.delete();
-            closeAndDispose();
-        } else {
-            System.out.println("No image to process.");
-        }
-    }
-
-    public void closeCamera() {
-        grabberLock.lock();
-        try {
-            if (grabber != null) {
-                grabber.stop();
-                grabber.release();
-                grabber = null;
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            grabberLock.unlock();
-        }
-    }
-
-    public void closeAndDispose() {
-        isRunning = false;
-        if (cameraThread != null) {
-            try {
-                cameraThread.join(); // Asegúrate de que el thread de la cámara termine antes de proceder.
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-        }
-        closeCamera();
-        dispose(); // Cierra la ventana
     }
 }
