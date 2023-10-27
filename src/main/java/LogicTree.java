@@ -1,32 +1,75 @@
+/**
+ * Esta clase representa un árbol lógico que puede convertir expresiones infix en postfix,
+ * construir un árbol de expresiones postfix y evaluar el resultado de la expresión lógica.
+ */
 public class LogicTree {
+    /**
+     * Clase interna que representa un nodo en el árbol de expresiones lógicas.
+     */
     static class TreeNode{
         String data;
         TreeNode left;
         TreeNode right;
-
+        /**
+         * Constructor de un nodo con un valor de datos.
+         *
+         * @param data El valor de datos para este nodo.
+         */
         public TreeNode(String data){
             this(data, null, null);
         }
+        /**
+         * Constructor de un nodo con un valor de datos, nodo izquierdo y nodo derecho.
+         *
+         * @param data  El valor de datos para este nodo.
+         * @param left  El nodo izquierdo.
+         * @param right El nodo derecho.
+         */
         public TreeNode(String data, TreeNode left, TreeNode right){
             this.data = data;
             this.left = left;
             this.right = right;
         }
+        /**
+         * Obtiene el valor de datos del nodo.
+         *
+         * @return El valor de datos del nodo.
+         */
         public String getElement(){
             return data;
         }
+        /**
+         * Obtiene el nodo izquierdo del nodo actual.
+         *
+         * @return El nodo izquierdo del nodo actual.
+         */
         public TreeNode getLeft(){
             return left;
         }
+        /**
+         * Obtiene el nodo derecho del nodo actual.
+         *
+         * @return El nodo derecho del nodo actual.
+         */
         public TreeNode getRight(){
             return right;
         }
     }
-
+    /**
+     * Verifica si una cadena es un operador lógico válido.
+     *
+     * @param token La cadena a verificar.
+     * @return true si es un operador lógico válido, false en caso contrario.
+     */
     public static boolean isOperator(String token){
         return token.equals("&") || token.equals("|") || token.equals("^") || token.equals("~");
     }
-
+    /**
+     * Obtiene la precedencia de un operador lógico.
+     *
+     * @param operator El operador cuya precedencia se desea obtener.
+     * @return El nivel de precedencia del operador.
+     */
     public static int precedence(String  operator){
         switch (operator){
             case "|":
@@ -39,7 +82,12 @@ public class LogicTree {
                 return 0;
         }
     }
-
+    /**
+     * Convierte una expresión infix en una expresión postfix.
+     *
+     * @param infix La expresión infix a convertir.
+     * @return La expresión postfix resultante.
+     */
     public static String infixToPostfix(String infix) {
         StringBuilder postfix = new StringBuilder();
         Stacks.Stack_LinkedList stack = new Stacks().new Stack_LinkedList();
@@ -76,7 +124,12 @@ public class LogicTree {
         }
         return postfix.toString().trim();
     }
-
+    /**
+     * Construye un árbol de expresiones lógicas a partir de una expresión postfix.
+     *
+     * @param postfix La expresión postfix.
+     * @return El nodo raíz del árbol de expresiones lógicas.
+     */
     public static TreeNode postfixToTree(String postfix){
         Stacks.Stack_LinkedList stack = new Stacks().new Stack_LinkedList();
         for (String token : postfix.split("\\s+")){
@@ -90,7 +143,12 @@ public class LogicTree {
         }
         return (TreeNode) stack.pop();
     }
-
+    /**
+     * Evalúa el resultado de un árbol de expresiones lógicas.
+     *
+     * @param tree El árbol de expresiones a evaluar.
+     * @return El resultado de la evaluación de la expresión lógica.
+     */
     public static boolean evaluate(TreeNode tree){
 //        System.out.println(tree.data);
         if (tree == null){
@@ -123,7 +181,12 @@ public class LogicTree {
             }
         }
     }
-
+    /**
+     * Calcula y devuelve el resultado de una expresión lógica dada.
+     *
+     * @param exp La expresión lógica a evaluar.
+     * @return El resultado de la expresión lógica.
+     */
     public boolean result(String exp){
         String infix = exp;
         System.out.println("Infix: " + infix);
@@ -135,7 +198,11 @@ public class LogicTree {
 
     }
 
-
+    /**
+     * Método principal de la clase.
+     *
+     * @param args Argumentos de línea de comandos (no se utilizan en este caso).
+     */
     public static void main(String[] args) {
         System.out.println("arbol usado");
 

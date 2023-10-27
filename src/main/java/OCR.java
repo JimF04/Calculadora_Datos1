@@ -9,8 +9,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Esta clase proporciona métodos para realizar OCR en imágenes utilizando la API de Google Cloud Vision.
+ */
 public class OCR {
-
+    /**
+     * Obtiene un cliente de Vision API configurado con las credenciales proporcionadas.
+     *
+     * @return Un cliente de Vision API configurado.
+     * @throws IOException Si ocurre un error al cargar las credenciales.
+     */
     public static ImageAnnotatorClient getVisionClient() throws IOException {
         // Ruta al archivo JSON de clave de cuenta de servicio
         String keyPath = "extra/application_default_credentials.json";
@@ -23,11 +31,23 @@ public class OCR {
                 .setCredentialsProvider(() -> credentials).build();
         return ImageAnnotatorClient.create(settings);
     }
-
+    /**
+     * Lee el contenido de una imagen desde un archivo.
+     *
+     * @param path La ruta del archivo de imagen.
+     * @return Los bytes del contenido de la imagen.
+     * @throws IOException Si ocurre un error al leer el archivo de imagen.
+     */
     public static byte[] readImage(String path) throws IOException {
         return Files.readAllBytes(Paths.get(path));
     }
-
+    /**
+     * Realiza el reconocimiento de texto en un documento de imagen.
+     *
+     * @param path La ruta del archivo de imagen a procesar.
+     * @return El texto extraído del documento de imagen.
+     * @throws Exception Si ocurre un error durante el procesamiento.
+     */
     public static String detectDocument(String path) throws Exception {
         try (ImageAnnotatorClient client = getVisionClient()) {
             ByteString content = ByteString.copyFrom(readImage(path));
@@ -40,7 +60,13 @@ public class OCR {
             return processResponse(response);
         }
     }
-
+    /**
+     * Procesa la respuesta del reconocimiento de texto y extrae el texto del documento de imagen.
+     *
+     * @param response La respuesta del reconocimiento de texto.
+     * @return El texto extraído del documento de imagen.
+     * @throws Exception Si ocurre un error durante el procesamiento.
+     */
     public static String processResponse(BatchAnnotateImagesResponse response) throws Exception {
         AnnotateImageResponse annotateImageResponse = response.getResponses(0);
         if (annotateImageResponse.hasError()) {

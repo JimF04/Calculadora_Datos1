@@ -6,9 +6,17 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Objects;
 
+/**
+ * Esta clase representa un servidor que escucha conexiones entrantes y reenvía mensajes a múltiples clientes
+ * conectados a través de diferentes puertos.
+ */
 public class Servidor{
 
-
+    /**
+     * Escribe datos en un archivo CSV llamado "historial.csv".
+     *
+     * @param data Los datos a escribir en el archivo CSV.
+     */
     private static void writeToCSV(String data) {
         File file = new File("historial.csv");
 

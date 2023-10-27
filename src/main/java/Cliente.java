@@ -632,7 +632,7 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
                                                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                                                         .addComponent(jButton37)
                                                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                        .addComponent(jButton38, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                        .addComponent(jButton38, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                                         .addComponent(jButton50, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)))
                                                                         .addGroup(Ventana_AlgebraicaLayout.createSequentialGroup()
@@ -714,11 +714,21 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
 
         pack();
     }// </editor-fold>
-
+    /**
+     * Este método se llama cuando se realiza una acción en el componente txt_mensaje1.
+     *
+     * @param evt El evento de acción que desencadenó este método.
+     */
     private void txt_mensaje1ActionPerformed(java.awt.event.ActionEvent evt) {
 
     }
 
+    /**
+     * Este método se llama cuando se hace clic en el botón jButton9.
+     * Agrega el texto del botón jButton9 a la pantalla_alge (supongo que es un componente de texto o área de texto).
+     *
+     * @param evt El evento de acción que desencadenó este método.
+     */
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {
         pantalla_alge.append(jButton9.getText());
     }
@@ -846,7 +856,18 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     private void jButton50ActionPerformed(java.awt.event.ActionEvent evt) {
         pantalla_alge.append(jButton50.getText());
     }
-
+    /**
+     * Este método se llama cuando se realiza una acción en el botón igual_alge.
+     * Realiza los siguientes pasos:
+     * 1. Obtiene la expresión matemática ingresada en el componente pantalla_alge.
+     * 2. Imprime la expresión en la consola.
+     * 3. Crea una instancia de la clase AlgebraicTree (supongo que realiza operaciones matemáticas).
+     * 4. Calcula el resultado de la expresión y lo muestra en pantalla_alge.
+     * 5. Obtiene la fecha y hora actual en el formato "dd-MM-yyyy HH:mm:ss".
+     * 6. Envía los datos de la expresión, resultado y fecha al servidor a través del método send().
+     *
+     * @param evt El evento de acción que desencadenó este método.
+     */
     private void igual_algeActionPerformed(java.awt.event.ActionEvent evt) {
         String exp = pantalla_alge.getText();
         System.out.println(exp);
@@ -916,7 +937,15 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
     private void jButton57ActionPerformed(java.awt.event.ActionEvent evt) {
         pantalla_log.append(jButton57.getText()+" ");
     }
-
+    /**
+     * Este método se llama cuando se realiza una acción en el botón cam_alge.
+     * Realiza los siguientes pasos:
+     * 1. Crea una instancia de la clase CameraFrame, que parece estar relacionada con una cámara.
+     * 2. Define un TextCallback que implementa el método appendText() para manejar el texto obtenido de la cámara.
+     * 3. Muestra la ventana de la cámara (CameraFrame).
+     *
+     * @param evt El evento de acción que desencadenó este método.
+     */
     private void cam_algeActionPerformed(java.awt.event.ActionEvent evt) {
         CameraFrame cameraFrame = new CameraFrame(new TextCallback() {
             @Override
@@ -936,7 +965,16 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         pantalla_log.setText("");
 
     }
-
+    /**
+     * Este método se llama cuando se realiza una acción en el botón cam_log.
+     * Realiza los siguientes pasos:
+     * 1. Crea una instancia de la clase CameraFrame, que parece estar relacionada con una cámara.
+     * 2. Define un TextCallback que implementa el método appendText() para manejar el texto obtenido de la cámara.
+     * 3. Muestra la ventana de la cámara (CameraFrame).
+     * 4. Agrega el texto obtenido de la cámara a la pantalla_log.
+     *
+     * @param evt El evento de acción que desencadenó este método.
+     */
     private void cam_logActionPerformed(java.awt.event.ActionEvent evt) {
         CameraFrame cameraFrame = new CameraFrame(new TextCallback() {
             @Override
@@ -947,7 +985,15 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         cameraFrame.setVisible(true);
 
     }
+    /**
+     * Interfaz que define un callback para agregar texto.
+     */
     public interface TextCallback {
+        /**
+         * Método que se llama para agregar texto.
+         *
+         * @param text El texto que se debe agregar.
+         */
         void appendText(String text);
     }
 
@@ -1070,7 +1116,18 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
 
 
 
-
+    /**
+     * Implementación del método run de la interfaz Runnable.
+     * Este método se ejecuta en un hilo separado y realiza las siguientes acciones:
+     *
+     * 1. Se conecta a un socket con un puerto libre y codifica ese puerto para enviarlo al servidor.
+     *    El puerto se codifica transformándolo en una cadena y añadiéndole un "0" al principio.
+     *    Luego, envía el puerto codificado al servidor para su almacenamiento (Ver Server.java).
+     *
+     * 2. Crea un Socket para escuchar los mensajes que le envíe el servidor y los muestra en pantalla.
+     *
+     * Este método se ejecuta en un bucle infinito para mantener la conexión y recibir mensajes continuamente.
+     */
     @Override
     public void run() {
 
@@ -1110,6 +1167,9 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
             System.out.println(e);}
     }
 }
+/**
+ * Clase que representa una ventana de cámara para capturar imágenes y procesar texto mediante OCR.
+ */
 class CameraFrame extends JFrame {
     private JButton btnTakePhoto;
     private JLabel cameraLabel;
@@ -1121,7 +1181,11 @@ class CameraFrame extends JFrame {
     private JButton btnCloseCamera;
     private Cliente.TextCallback textCallback;
 
-
+    /**
+     * Constructor de la clase CameraFrame.
+     *
+     * @param textCallback Un objeto que implementa la interfaz TextCallback para agregar texto.
+     */
     public CameraFrame(Cliente.TextCallback textCallback) {
         this.textCallback = textCallback;
 
@@ -1166,7 +1230,9 @@ class CameraFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-
+    /**
+     * Inicia la cámara y comienza a capturar imágenes.
+     */
     public void startCamera() {
         grabberLock.lock();
         try {
@@ -1201,6 +1267,9 @@ class CameraFrame extends JFrame {
         }
     }
 
+    /**
+     * Captura una imagen actual, la procesa mediante OCR y muestra el texto en pantalla.
+     */
     public void captureAndProcess() {
         if (currentFrame != null) {
             LocalDateTime now = LocalDateTime.now();
@@ -1229,7 +1298,9 @@ class CameraFrame extends JFrame {
             System.out.println("No image to process.");
         }
     }
-
+    /**
+     * Cierra la cámara y libera sus recursos.
+     */
     public void closeCamera() {
         grabberLock.lock();
         try {
@@ -1244,7 +1315,9 @@ class CameraFrame extends JFrame {
             grabberLock.unlock();
         }
     }
-
+    /**
+     * Cierra la cámara, libera sus recursos y finaliza la ventana.
+     */
     public void closeAndDispose() {
         isRunning = false;
         if (cameraThread != null) {
