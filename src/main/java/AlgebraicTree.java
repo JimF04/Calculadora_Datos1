@@ -97,7 +97,7 @@ public class AlgebraicTree {
         String preprocessed = preprocess(infix);
 
         for (String token : preprocessed.split("\\s+")) {
-            if (Character.isDigit(token.charAt(0))) {
+            if (Character.isDigit(token.charAt(0)) || (token.length() > 1 && token.startsWith("-") && Character.isDigit(token.charAt(1)))){
                 postfix.append(token);
                 postfix.append(' ');
             } else if (isOperator(token)) {
@@ -158,7 +158,7 @@ public class AlgebraicTree {
         if (tree == null){
             return 0;
         } else if (tree.getLeft() == null && tree.getRight() == null){
-            return Integer.parseInt(tree.getElement());
+            return Float.parseFloat(tree.getElement());
         } else {
             float left = evaluate(tree.getLeft());
             float right = evaluate(tree.getRight());
@@ -171,7 +171,11 @@ public class AlgebraicTree {
                 case "*":
                     return left * right;
                 case "/":
-                    return left / right;
+                    if (right == 0){
+                        return -1;
+                    } else {
+                        return left / right;
+                    }
                 case "**":
                     return (float) Math.pow(left, right);
                 case "%":
@@ -191,6 +195,15 @@ public class AlgebraicTree {
         // Eliminar todos los espacios
         String noSpaces = infix.replaceAll("\\s+", "");
 
+        // Reemplazar doble negativo con positivo
+        noSpaces = noSpaces.replaceAll("--", "");
+
+        // Detectar y cambiar el patrón a**(-b) a a**(0-b)
+        noSpaces = noSpaces.replaceAll("(\\d+)\\*\\*\\((-\\d+)\\)", "$1**(0$2)");
+
+        // Detectar y cambiar el patrón a*(-b) a - (a*b)
+        noSpaces = noSpaces.replaceAll("(\\([^)]+\\)|\\d+)\\*\\((-\\d+)\\)", "$1*(0$2)");
+
         // Añadir espacios alrededor de todos los operadores
         String spaced = noSpaces.replaceAll("(\\*\\*|[+\\-*/()%^])", " $1 ");
 
@@ -198,6 +211,7 @@ public class AlgebraicTree {
         String cleaned = spaced.replaceAll("\\s+", " ").trim();
         return cleaned;
     }
+
     /**
      * Calcula y devuelve el resultado de una expresión algebraica dada.
      *
@@ -222,6 +236,27 @@ public class AlgebraicTree {
      */
     public static void main(String[] args) {
         System.out.println("arbol usado");
+        AlgebraicTree at = new AlgebraicTree();
+
+        String[] testExpressions = {
+                "5*(-2)",
+                "10*(-5) + 3",
+                "(6**6)*(-10)",
+                "(7 + 1)*(-2)",
+                "(-5)*(-5)",
+                "(6**(-6))",
+                "6/0",
+                "--3",
+                "--3 + (5 * (-2)) + (6**(-6))"
+
+        };
+
+        for (String expr : testExpressions) {
+            System.out.println("Expression: " + expr);
+            System.out.println("Result: " + at.result(expr));
+            System.out.println("========================");
+        }
+
 
     }
 
