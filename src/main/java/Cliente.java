@@ -427,7 +427,7 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
         );
 
-        jTabbedPane2.addTab("Historial", jPanel1);
+
 
         nombre_cliente2.setText("Calculadora");
 

@@ -177,7 +177,13 @@ public class AlgebraicTree {
                         return left / right;
                     }
                 case "**":
-                    return (float) Math.pow(left, right);
+                    if(left<0){
+                        return -1;
+                    }
+                    else{
+                        return (float) Math.pow(left, right);
+
+                    }
                 case "%":
                     return left/100 * right;
                 default:
