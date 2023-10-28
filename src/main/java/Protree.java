@@ -1,4 +1,7 @@
+import com.fathzer.soft.javaluator.DoubleEvaluator;
+
 import java.util.function.Function;
+
 
 class Expresion {
     public double evaluar() {
@@ -77,7 +80,7 @@ class IntegralDefinida extends Expresion {
 
     public double evaluar() {
         // Método de aproximación numérica para calcular la integral definida
-        int numIntervalos = 1000; // Puedes ajustar la cantidad de intervalos
+        int numIntervalos = 1000000; // Puedes ajustar la cantidad de intervalos
         double anchoIntervalo = (limiteSuperior - limiteInferior) / numIntervalos;
         double suma = 0.0;
 
@@ -94,19 +97,33 @@ class IntegralDefinida extends Expresion {
 
 public class Protree {
     public static void main(String[] args) {
-        // Define la función f(x) = x^2
-        Function<Double, Double> funcionCuadratica = x -> x * x;
+        DoubleEvaluator evaluator = new DoubleEvaluator();
 
-        // Crea una variable para x
-        Variable x = new Variable("x", funcionCuadratica);
+        // Permite al usuario ingresar la expresión matemática
+        String expresion = "x^3 + 1"; // Ejemplo de expresión
+        // Define los límites de integración
+        double limiteInferior = 4.0;
+        double limiteSuperior = 10.0;
+        // Añadir código para permitir al usuario ingresar los límites de integración
 
-        // Construye la expresión f(x) = x^2
-        Expresion f_x = new OperadorBinario('*', x, x);
+        int numIntervalos = 1000000; // Ajusta el número de intervalos
+        double anchoIntervalo = (limiteSuperior - limiteInferior) / numIntervalos;
+        double suma = 0.0;
 
-        // Calcula la integral definida de f(x) en [0, 1]
-        IntegralDefinida integral = new IntegralDefinida(f_x, x, 0.0, 1.0);
+        for (int i = 0; i < numIntervalos; i++) {
+            double x1 = limiteInferior + i * anchoIntervalo;
+            double x2 = x1 + anchoIntervalo;
+            // Evalúa la función en los puntos del intervalo
+            double area = (evaluarFuncion(expresion, x1) + evaluarFuncion(expresion, x2)) / 2 * anchoIntervalo;
+            suma += area;
+        }
 
-        double resultado = integral.evaluar();
-        System.out.println("El resultado de la integral definida es: " + resultado);
+        System.out.println("El resultado de la integral definida es: " + suma);
+    }
+
+    // Función para evaluar la expresión en un punto dado
+    private static double evaluarFuncion(String expresion, double x) {
+        DoubleEvaluator evaluator = new DoubleEvaluator();
+        return evaluator.evaluate(expresion.replace("x", String.valueOf(x)));
     }
 }
