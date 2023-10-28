@@ -6,6 +6,8 @@ import org.bytedeco.opencv.opencv_core.IplImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
@@ -17,9 +19,9 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.Date;
 
 
 public class Cliente extends javax.swing.JFrame implements Runnable{
@@ -763,6 +765,31 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
         gbc.gridx = 1;
         puntosExtraPanel.add(equalsButton, gbc);
 
+        // Listener para el botón "="
+        equalsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Extraer valores de los campos de texto
+                    double lowerLimit = Double.parseDouble(lowerLimitTextField.getText());
+                    double upperLimit = Double.parseDouble(upperLimitTextField.getText());
+                    String expression = expressionTextField.getText();
+
+                    // Usar la función en Protree.java para calcular la integral
+                    // Suponiendo que tienes un método en Protree que se llame "calculateIntegral"
+                    double result = Protree.calculateIntegral(expression, lowerLimit, upperLimit);
+
+                    // Mostrar el resultado en el campo expressionTextField
+                    expressionTextField.setText(String.valueOf(result));
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Por favor, introduce valores válidos.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Error al calcular la integral: " + ex.getMessage());
+                }
+            }
+        });
+
 // Añadiendo el nuevo panel al JTabbedPane existente
 // Suponiendo que la variable del JTabbedPane se llama "jTabbedPane2"
         jTabbedPane2.addTab("Puntos extra", puntosExtraPanel);
@@ -779,7 +806,7 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
      *
      */
 
-    
+
     private void txt_mensaje1ActionPerformed(java.awt.event.ActionEvent evt) {
 
     }

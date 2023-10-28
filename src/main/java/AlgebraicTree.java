@@ -226,11 +226,11 @@ public class AlgebraicTree {
      */
     public float result(String exp){
         String infix = exp;
-        System.out.println("Infix: " + infix);
+        //System.out.println("Infix: " + infix);
         String postfix = infixToPostfix(infix);
-        System.out.println("Postfix: " + postfix);
+        //System.out.println("Postfix: " + postfix);
         TreeNode tree = postfixToTree(postfix);
-        System.out.println("Result: " + evaluate(tree));
+        //System.out.println("Result: " + evaluate(tree));
         return evaluate(tree);
 
     }
@@ -242,30 +242,5 @@ public class AlgebraicTree {
      */
     public static void main(String[] args) {
         System.out.println("arbol usado");
-        AlgebraicTree at = new AlgebraicTree();
-
-        String[] testExpressions = {
-                "5*(-2)",
-                "10*(-5) + 3",
-                "(6**6)*(-10)",
-                "(7 + 1)*(-2)",
-                "(-5)*(-5)",
-                "(6**(-6))",
-                "6/0",
-                "--3",
-                "--3 + (5 * (-2)) + (6**(-6))"
-
-        };
-
-        for (String expr : testExpressions) {
-            System.out.println("Expression: " + expr);
-            System.out.println("Result: " + at.result(expr));
-            System.out.println("========================");
-        }
-
-
     }
-
-
-
 }
