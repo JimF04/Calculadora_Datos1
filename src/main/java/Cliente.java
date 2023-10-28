@@ -718,42 +718,56 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
 
 
         // Creando el panel para la nueva pestaña "puntos extra"
-        JPanel puntosExtraPanel = new JPanel();
-        puntosExtraPanel.setLayout(new GridLayout(4, 2)); // Disposición para 4 filas y 2 columnas
+        JPanel puntosExtraPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Márgenes entre componentes
+
+// Agregar el JLabel "Puntos extra Porfa" arriba del panel
+        JLabel titleLabel = new JLabel("Puntos extra Porfa \uD83D\uDE4F");
+        gbc.gridwidth = 2; // Establece el ancho para que abarque 2 columnas
+        puntosExtraPanel.add(titleLabel, gbc);
+        gbc.gridwidth = 1; // Restaura el ancho a 1
+
+        gbc.gridy = 1; // Incrementa la fila para los otros componentes
 
 // Creando y añadiendo componentes para el límite inferior
         JLabel lowerLimitLabel = new JLabel("Límite inferior:");
-        JTextField lowerLimitTextField = new JTextField();
-        lowerLimitTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
-        puntosExtraPanel.add(lowerLimitLabel);
-        puntosExtraPanel.add(lowerLimitTextField);
+        JTextField lowerLimitTextField = new JTextField(10);
+        puntosExtraPanel.add(lowerLimitLabel, gbc);
+        gbc.gridx = 1;
+        puntosExtraPanel.add(lowerLimitTextField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
 
 // Creando y añadiendo componentes para el límite superior
         JLabel upperLimitLabel = new JLabel("Límite superior:");
-        JTextField upperLimitTextField = new JTextField();
-        upperLimitTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
-        puntosExtraPanel.add(upperLimitLabel);
-        puntosExtraPanel.add(upperLimitTextField);
+        JTextField upperLimitTextField = new JTextField(10);
+        puntosExtraPanel.add(upperLimitLabel, gbc);
+        gbc.gridx = 1;
+        puntosExtraPanel.add(upperLimitTextField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
 
 // Creando y añadiendo componentes para la expresión
         JLabel expressionLabel = new JLabel("Expresión:");
-        JTextField expressionTextField = new JTextField();
-        expressionTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
-        puntosExtraPanel.add(expressionLabel);
-        puntosExtraPanel.add(expressionTextField);
+        JTextField expressionTextField = new JTextField(20);
+        puntosExtraPanel.add(expressionLabel, gbc);
+        gbc.gridx = 1;
+        puntosExtraPanel.add(expressionTextField, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
 
 // Creando y añadiendo el botón "="
         JButton equalsButton = new JButton("=");
-// Puedes añadir un action listener a este botón si es necesario
-// equalsButton.addActionListener(e -> {
-//     // Manejar el clic del botón aquí
-// });
-        puntosExtraPanel.add(new JLabel()); // Espacio vacío
-        puntosExtraPanel.add(equalsButton);
+        puntosExtraPanel.add(new JLabel(), gbc); // Espacio vacío
+        gbc.gridx = 1;
+        puntosExtraPanel.add(equalsButton, gbc);
 
 // Añadiendo el nuevo panel al JTabbedPane existente
-// Suponiendo que la variable del JTabbedPane se llama "tabbedPane"
+// Suponiendo que la variable del JTabbedPane se llama "jTabbedPane2"
         jTabbedPane2.addTab("Puntos extra", puntosExtraPanel);
+
+
 
         pack();
     }// </editor-fold>
@@ -761,7 +775,11 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
      * Este método se llama cuando se realiza una acción en el componente txt_mensaje1.
      *
      * @param evt El evento de acción que desencadenó este método.
+     *
+     *
      */
+
+    
     private void txt_mensaje1ActionPerformed(java.awt.event.ActionEvent evt) {
 
     }
