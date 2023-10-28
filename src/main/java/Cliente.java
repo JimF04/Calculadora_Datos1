@@ -115,6 +115,9 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
 
         nombre_cliente1.setText("Calculadora");
 
+
+
+
         txt_mensaje1.setText(" ");
         txt_mensaje1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -711,6 +714,46 @@ public class Cliente extends javax.swing.JFrame implements Runnable{
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jTabbedPane2)
         );
+
+
+
+        // Creando el panel para la nueva pestaña "puntos extra"
+        JPanel puntosExtraPanel = new JPanel();
+        puntosExtraPanel.setLayout(new GridLayout(4, 2)); // Disposición para 4 filas y 2 columnas
+
+// Creando y añadiendo componentes para el límite inferior
+        JLabel lowerLimitLabel = new JLabel("Límite inferior:");
+        JTextField lowerLimitTextField = new JTextField();
+        lowerLimitTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
+        puntosExtraPanel.add(lowerLimitLabel);
+        puntosExtraPanel.add(lowerLimitTextField);
+
+// Creando y añadiendo componentes para el límite superior
+        JLabel upperLimitLabel = new JLabel("Límite superior:");
+        JTextField upperLimitTextField = new JTextField();
+        upperLimitTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
+        puntosExtraPanel.add(upperLimitLabel);
+        puntosExtraPanel.add(upperLimitTextField);
+
+// Creando y añadiendo componentes para la expresión
+        JLabel expressionLabel = new JLabel("Expresión:");
+        JTextField expressionTextField = new JTextField();
+        expressionTextField.setPreferredSize(new Dimension(100, 20)); // Estableciendo un tamaño más pequeño
+        puntosExtraPanel.add(expressionLabel);
+        puntosExtraPanel.add(expressionTextField);
+
+// Creando y añadiendo el botón "="
+        JButton equalsButton = new JButton("=");
+// Puedes añadir un action listener a este botón si es necesario
+// equalsButton.addActionListener(e -> {
+//     // Manejar el clic del botón aquí
+// });
+        puntosExtraPanel.add(new JLabel()); // Espacio vacío
+        puntosExtraPanel.add(equalsButton);
+
+// Añadiendo el nuevo panel al JTabbedPane existente
+// Suponiendo que la variable del JTabbedPane se llama "tabbedPane"
+        jTabbedPane2.addTab("Puntos extra", puntosExtraPanel);
 
         pack();
     }// </editor-fold>
